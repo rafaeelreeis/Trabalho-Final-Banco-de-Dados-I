@@ -1,0 +1,78 @@
+-- Domínios para padronizar tipos de dados
+CREATE DOMAIN dominio_nome AS VARCHAR(100) NOT NULL;
+CREATE DOMAIN dominio_telefone AS VARCHAR(20)
+CHECK (LENGTH(VALUE) BETWEEN 10 AND 20);
+CREATE DOMAIN dominio_preco AS NUMERIC(10, 2) CHECK (VALUE > 0);
+CREATE DOMAIN dominio_data_hora AS TIMESTAMP NOT NULL;
+
+
+-- Tabela Cliente
+CREATE TABLE cliente (
+    id_cliente SERIAL PRIMARY KEY,
+    nome dominio_nome,
+    telefone dominio_telefone,
+    email VARCHAR(100),
+    data_nascimento DATE
+);
+
+-- Tabela Funcionário com Especialização
+CREATE TABLE funcionario (
+    id_funcionario SERIAL PRIMARY KEY,
+    nome dominio_nome,
+    telefone dominio_telefone,
+    especializacao VARCHAR(50),
+    salario dominio_preco
+);
+
+-- Especialização: Cabeleireiro
+CREATE TABLE cabeleireiro (
+    id_funcionario INT PRIMARY KEY REFERENCES funcionario(id_funcionario),
+    experiencia INT,
+    certificacao VARCHAR(100)
+);
+
+-- Especialização: Barbeiro
+CREATE TABLE barbeiro (
+    id_funcionario INT PRIMARY KEY REFERENCES funcionario(id_funcionario),
+    experiencia INT,
+    certificacao VARCHAR(100)
+);
+
+-- Tabela Produto
+CREATE TABLE produto (
+    id_produto SERIAL PRIMARY KEY,
+    nome_produto dominio_nome,
+    estoque INT CHECK (estoque >= 0),
+    preco dominio_preco,
+    descricao TEXT
+);
+
+-- Tabela Serviço
+CREATE TABLE servico (
+    id_servico SERIAL PRIMARY KEY,
+    nome_servico dominio_nome,
+    descricao TEXT,
+    preco dominio_preco
+);
+
+-- Tabela Agendamento
+CREATE TABLE agendamento (
+    id_agendamento SERIAL PRIMARY KEY,
+    data_hora dominio_data_hora,
+    id_cliente INT REFERENCES cliente(id_cliente),
+    id_funcionario INT REFERENCES funcionario(id_funcionario),
+    id_servico INT REFERENCES servico(id_servico)
+);
+
+-- Tabela Atendimento
+CREATE TABLE atendimento (
+    id_atendimento SERIAL PRIMARY KEY,
+    data_hora dominio_data_hora,
+    id_cliente INT REFERENCES cliente(id_cliente),
+    id_funcionario INT REFERENCES funcionario(id_funcionario),
+    id_servico INT REFERENCES servico(id_servico)
+);
+
+
+
+
